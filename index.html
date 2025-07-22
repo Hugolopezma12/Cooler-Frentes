@@ -62,7 +62,7 @@
     </select>
 
     <label>Total de Frentes (0 a 600)</label>
-    <input type="number" id="frentes" min="0" max="600" placeholder="Ingresa el total de frentes">
+    <input type="number" id="frentes" min="0" max="600" step="1" placeholder="Ingresa el total de frentes" required>
 
     <button onclick="calcular()">Calcular</button>
 
@@ -71,11 +71,12 @@
     <script>
         function calcular() {
             const ubicacion = document.getElementById('ubicacion').value;
-            const total = parseInt(document.getElementById('frentes').value);
+            const totalInput = document.getElementById('frentes').value;
+            const total = parseInt(totalInput, 10);
             const resultado = document.getElementById('resultado');
 
-            if (isNaN(total) || total < 0 || total > 600) {
-                resultado.innerHTML = '<p style="color:red;">Por favor ingresa un número válido de frentes.</p>';
+            if (totalInput.trim() === '' || isNaN(total) || total < 0 || total > 600) {
+                resultado.innerHTML = '<p style="color:red;">Por favor ingresa un número válido de frentes (entre 0 y 600).</p>';
                 return;
             }
 
@@ -102,13 +103,13 @@
             categorias.forEach(cat => {
                 const minFrentes = Math.ceil(total * cat.min);
                 const maxFrentes = Math.ceil(total * cat.max);
-                tabla += <tr>
+                tabla += `<tr>
                     <td>${cat.nombre}</td>
                     <td>${(cat.min * 100).toFixed(0)}%</td>
                     <td>${(cat.max * 100).toFixed(0)}%</td>
                     <td>${minFrentes}</td>
                     <td>${maxFrentes}</td>
-                </tr>;
+                </tr>`;
             });
 
             tabla += '</table>';
