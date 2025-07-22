@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Frentes - Cooler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #e51c23; /* Coca-Cola rojo */
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select, button {
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+        }
+        button {
+            background-color: #e51c23;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #b71c1c;
+        }
+        table {
+            width: 100%;
+            max-width: 600px;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Frentes - Cooler</h1>
+
+    <label>¿Dónde está el cooler?</label>
+    <select id="ubicacion">
+        <option value="linea">Línea de Cajas</option>
+        <option value="piso">Piso de Venta</option>
+    </select>
+
+    <label>Total de Frentes (0 a 600)</label>
+    <input type="number" id="frentes" min="0" max="600" placeholder="Ingresa el total de frentes">
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div id="resultado"></div>
+
+    <script>
+        function calcular() {
+            const ubicacion = document.getElementById('ubicacion').value;
+            const total = parseInt(document.getElementById('frentes').value);
+            const resultado = document.getElementById('resultado');
+
+            if (isNaN(total) || total < 0 || total > 600) {
+                resultado.innerHTML = '<p style="color:red;">Por favor ingresa un número válido de frentes.</p>';
+                return;
+            }
+
+            let categorias = [];
+
+            if (ubicacion === 'linea') {
+                categorias = [
+                    { nombre: 'Colas', min: 0.40, max: 0.60 },
+                    { nombre: 'Sabor Frutal', min: 0.16, max: 0.24 },
+                    { nombre: 'Nutrición', min: 0.16, max: 0.24 },
+                    { nombre: 'Hidratación', min: 0.08, max: 0.12 },
+                ];
+            } else {
+                categorias = [
+                    { nombre: 'Colas', min: 0.40, max: 0.60 },
+                    { nombre: 'Sabor Frutal', min: 0.20, max: 0.30 },
+                    { nombre: 'Nutrición', min: 0.12, max: 0.18 },
+                    { nombre: 'Hidratación', min: 0.08, max: 0.12 },
+                ];
+            }
+
+            let tabla = '<table><tr><th>Categoría</th><th>Mín (%)</th><th>Máx (%)</th><th>Frentes Mínimos</th><th>Frentes Máximos</th></tr>';
+
+            categorias.forEach(cat => {
+                const minFrentes = Math.ceil(total * cat.min);
+                const maxFrentes = Math.ceil(total * cat.max);
+                tabla += `<tr>
+                    <td>${cat.nombre}</td>
+                    <td>${(cat.min * 100).toFixed(0)}%</td>
+                    <td>${(cat.max * 100).toFixed(0)}%</td>
+                    <td>${minFrentes}</td>
+                    <td>${maxFrentes}</td>
+                </tr>`;
+            });
+
+            tabla += '</table>';
+            resultado.innerHTML = tabla;
+        }
+    </script>
+</body>
+</html>
