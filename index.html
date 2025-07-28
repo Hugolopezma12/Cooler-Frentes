@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +13,7 @@
             padding: 20px;
         }
         h1 {
-            color: #e51c23; /* Coca-Cola rojo */
+            color: #e51c23;
         }
         label {
             display: block;
@@ -27,14 +27,23 @@
             max-width: 400px;
         }
         button {
-            background-color: #e51c23;
-            color: white;
             border: none;
             cursor: pointer;
             font-weight: bold;
         }
-        button:hover {
+        .btn-calcular {
+            background-color: #e51c23;
+            color: white;
+        }
+        .btn-calcular:hover {
             background-color: #b71c1c;
+        }
+        .btn-limpiar {
+            background-color: #999;
+            color: white;
+        }
+        .btn-limpiar:hover {
+            background-color: #666;
         }
         table {
             width: 100%;
@@ -64,7 +73,8 @@
     <label>Total de Frentes (0 a 600)</label>
     <input type="number" id="frentes" min="0" max="600" step="1" placeholder="Ingresa el total de frentes" required>
 
-    <button onclick="calcular()">Calcular</button>
+    <button class="btn-calcular" onclick="calcular()">Calcular</button>
+    <button class="btn-limpiar" onclick="limpiar()">Limpiar</button>
 
     <div id="resultado"></div>
 
@@ -86,15 +96,15 @@
                 categorias = [
                     { nombre: 'Colas', min: 0.40, max: 0.60 },
                     { nombre: 'Sabor Frutal', min: 0.16, max: 0.24 },
-                    { nombre: 'Nutrición', min: 0.16, max: 0.24 },
-                    { nombre: 'Hidratación', min: 0.08, max: 0.12 },
+                    { nombre: 'Hidratación', min: 0.16, max: 0.24 },
+                    { nombre: 'Nutrición', min: 0.08, max: 0.12 },
                 ];
             } else {
                 categorias = [
                     { nombre: 'Colas', min: 0.40, max: 0.60 },
                     { nombre: 'Sabor Frutal', min: 0.20, max: 0.30 },
-                    { nombre: 'Nutrición', min: 0.12, max: 0.18 },
-                    { nombre: 'Hidratación', min: 0.08, max: 0.12 },
+                    { nombre: 'Hidratación', min: 0.12, max: 0.18 },
+                    { nombre: 'Nutrición', min: 0.08, max: 0.12 },
                 ];
             }
 
@@ -114,6 +124,12 @@
 
             tabla += '</table>';
             resultado.innerHTML = tabla;
+        }
+
+        function limpiar() {
+            document.getElementById('ubicacion').value = 'linea';
+            document.getElementById('frentes').value = '';
+            document.getElementById('resultado').innerHTML = '';
         }
     </script>
 </body>
