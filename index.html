@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Calculadora de Frentes - Cooler</title>
     <style>
         :root {
@@ -20,24 +20,34 @@
             margin: 0;
             padding: 20px;
         }
-        h1 {
+        h1, h2 {
             color: var(--color-rojo);
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 1.5rem;
+        }
+        h2 {
+            font-size: 1.3rem;
+            margin-top: 40px;
         }
         label {
             display: block;
             margin: 10px 0 5px;
         }
         input, select, button {
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
             font-size: 16px;
             width: 100%;
             max-width: 400px;
+            box-sizing: border-box;
         }
         button {
             border: none;
             cursor: pointer;
             font-weight: bold;
+            border-radius: 5px;
         }
         .btn-calcular {
             background-color: var(--color-rojo);
@@ -53,11 +63,15 @@
         .btn-limpiar:hover {
             background-color: var(--color-gris-hover);
         }
-        table {
+        .tabla-container {
             width: 100%;
-            max-width: 600px;
-            border-collapse: collapse;
+            overflow-x: auto;
             margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            min-width: 500px;
+            width: 100%;
         }
         th, td {
             border: 1px solid #ddd;
@@ -71,12 +85,42 @@
             color: red;
             font-weight: bold;
         }
+        small {
+            display: block;
+            color: #555;
+            font-size: 0.85em;
+            margin-top: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+            h2 {
+                font-size: 1.1rem;
+                margin-top: 30px;
+            }
+            input, select, button {
+                font-size: 18px;
+                padding: 14px;
+                max-width: 100%;
+            }
+            th, td {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>Calculadora de Frentes - Cooler</h1>
 
-    <form id="calculadora">
+    <form id="calculadoraFrentes">
         <label for="ubicacion">¿Dónde está el cooler?</label>
         <select id="ubicacion" name="ubicacion">
             <option value="linea">Línea de Cajas</option>
@@ -90,71 +134,114 @@
         <button type="reset" class="btn-limpiar">Limpiar</button>
     </form>
 
-    <div id="resultado"></div>
+    <div class="tabla-container">
+        <div id="resultadoFrentes"></div>
+    </div>
 
-    <script>
-        const configCategorias = {
-            linea: [
-                { nombre: 'Colas', min: 0.40, max: 0.60 },
-                { nombre: 'Sabor Frutal', min: 0.16, max: 0.24 },
-                { nombre: 'Hidratación', min: 0.16, max: 0.24 },
-                { nombre: 'Nutrición', min: 0.08, max: 0.12 },
-            ],
-            piso: [
-                { nombre: 'Colas', min: 0.40, max: 0.60 },
-                { nombre: 'Sabor Frutal', min: 0.20, max: 0.30 },
-                { nombre: 'Hidratación', min: 0.12, max: 0.18 },
-                { nombre: 'Nutrición', min: 0.08, max: 0.12 },
-            ]
-        };
+    <h2>Cálculo de Enfriadores por Líneas de Cajas</h2>
 
-        document.getElementById('calculadora').addEventListener('submit', function(e) {
-            e.preventDefault();
-            calcular();
+    <form id="calculadoraEnfriadores">
+        <div>
+            <label for="lineasCajas">¿Cuántas líneas de caja tiene la tienda?</label>
+            <input type="number" id="lineasCajas" placeholder="Ej. 10" min="0" />
+            <small>Recuerda que <strong>TODO autocobro se considera 1</strong>.</small>
+        </div>
+
+        <div>
+            <label for="competencia">¿Cuántos enfriadores tiene la competencia?</label>
+            <input type="number" id="competencia" placeholder="Ej. 2" min="0" />
+            <small>Recuerda que se toman todos los enfriadores NARTD, como son PC, AGA, Jarritos, Electrolit, Peñafiel, Lala.</small>
+        </div>
+
+        <button type="submit" class="btn-calcular">Calcular enfriadores necesarios</button>
+        <button type="reset" class="btn-limpiar">Limpiar</button>
+    </form>
+
+    <div id="resultadoEnfriadores" style="margin-top: 20px; font-size: 1.2em; font-weight: bold;"></div>
+
+<script>
+    // Configuración para cálculo de frentes
+    const configCategorias = {
+        linea: [
+            { nombre: 'Colas', min: 0.40, max: 0.60 },
+            { nombre: 'Sabor Frutal', min: 0.16, max: 0.24 },
+            { nombre: 'Hidratación', min: 0.16, max: 0.24 },
+            { nombre: 'Nutrición', min: 0.08, max: 0.12 },
+        ],
+        piso: [
+            { nombre: 'Colas', min: 0.40, max: 0.60 },
+            { nombre: 'Sabor Frutal', min: 0.20, max: 0.30 },
+            { nombre: 'Hidratación', min: 0.12, max: 0.18 },
+            { nombre: 'Nutrición', min: 0.08, max: 0.12 },
+        ]
+    };
+
+    // Evento para cálculo frentes
+    document.getElementById('calculadoraFrentes').addEventListener('submit', function(e) {
+        e.preventDefault();
+        calcularFrentes();
+    });
+
+    function calcularFrentes() {
+        const ubicacion = document.getElementById('ubicacion').value;
+        const totalInput = document.getElementById('frentes').value;
+        const total = parseInt(totalInput, 10);
+        const resultado = document.getElementById('resultadoFrentes');
+
+        if (!totalInput || isNaN(total) || total < 0 || total > 600) {
+            resultado.innerHTML = '<p class="error">Por favor ingresa un número válido de frentes (entre 0 y 600).</p>';
+            return;
+        }
+
+        const categorias = configCategorias[ubicacion];
+        let tabla = `
+            <table>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Mín (%)</th>
+                    <th>Máx (%)</th>
+                    <th>Frentes Mínimos</th>
+                    <th>Frentes Máximos</th>
+                </tr>
+        `;
+
+        categorias.forEach(cat => {
+            const minFrentes = Math.ceil(total * cat.min);
+            const maxFrentes = Math.floor(total * cat.max);
+
+            tabla += `
+                <tr>
+                    <td>${cat.nombre}</td>
+                    <td>${(cat.min * 100).toFixed(0)}%</td>
+                    <td>${(cat.max * 100).toFixed(0)}%</td>
+                    <td>${minFrentes}</td>
+                    <td>${maxFrentes}</td>
+                </tr>
+            `;
         });
 
-        function calcular() {
-            const ubicacion = document.getElementById('ubicacion').value;
-            const totalInput = document.getElementById('frentes').value;
-            const total = parseInt(totalInput, 10);
-            const resultado = document.getElementById('resultado');
+        tabla += '</table>';
+        resultado.innerHTML = tabla;
+    }
 
-            if (!totalInput || isNaN(total) || total < 0 || total > 600) {
-                resultado.innerHTML = '<p class="error">Por favor ingresa un número válido de frentes (entre 0 y 600).</p>';
-                return;
-            }
+    // Evento para cálculo enfriadores
+    document.getElementById('calculadoraEnfriadores').addEventListener('submit', function(e) {
+        e.preventDefault();
+        calcularEnfriadores();
+    });
 
-            const categorias = configCategorias[ubicacion];
-            let tabla = `
-                <table>
-                    <tr>
-                        <th>Categoría</th>
-                        <th>Mín (%)</th>
-                        <th>Máx (%)</th>
-                        <th>Frentes Mínimos</th>
-                        <th>Frentes Máximos</th>
-                    </tr>
-            `;
+    function calcularEnfriadores() {
+        const lineas = parseInt(document.getElementById("lineasCajas").value) || 0;
+        const competencia = parseInt(document.getElementById("competencia").value) || 0;
 
-            categorias.forEach(cat => {
-                // Redondeo hacia arriba para mínimos y hacia abajo para máximos
-                const minFrentes = Math.ceil(total * cat.min);
-                const maxFrentes = Math.floor(total * cat.max);
+        const enfriadoresMinimos = Math.floor(lineas / 4);
+        const enfriadoresCompetencia = competencia + 1;
+        const enfriadoresNecesarios = Math.max(enfriadoresMinimos, enfriadoresCompetencia);
 
-                tabla += `
-                    <tr>
-                        <td>${cat.nombre}</td>
-                        <td>${(cat.min * 100).toFixed(0)}%</td>
-                        <td>${(cat.max * 100).toFixed(0)}%</td>
-                        <td>${minFrentes}</td>
-                        <td>${maxFrentes}</td>
-                    </tr>
-                `;
-            });
-
-            tabla += '</table>';
-            resultado.innerHTML = tabla;
-        }
-    </script>
+        document.getElementById("resultadoEnfriadores").innerHTML =
+            `Debes tener <span style="color:green; font-size:1.5em;">${enfriadoresNecesarios}</span> enfriadores como mínimo.`;
+    }
+</script>
 </body>
 </html>
+
