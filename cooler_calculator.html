@@ -3,117 +3,952 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Calculadora de Frentes - Cooler</title>
+
     <style>
+        :root {
+            --rojo: #e51c23;
+            --rojo-hover: #b71c1c;
+            --gris: #777;
+            --gris-hover: #555;
+            --texto: #333;
+            --fondo: #fff;
+            --borde: #ddd;
+            --gris-claro: #f5f5f5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #fff;
-            color: #333;
+            background: var(--fondo);
+            color: var(--texto);
             margin: 0;
             padding: 20px;
         }
-        h1 {
-            color: #e51c23; /* Coca-Cola rojo */
+
+        .contenedor {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
+
+        h1 {
+            color: var(--rojo);
+            font-size: 1.7rem;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--rojo);
+            font-size: 1.35rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--rojo);
+            padding-bottom: 8px;
+        }
+
         label {
             display: block;
-            margin: 10px 0 5px;
+            font-weight: bold;
+            margin: 15px 0 7px;
         }
-        input, select, button {
-            padding: 10px;
-            margin-bottom: 20px;
-            font-size: 16px;
-            width: 100%;
-            max-width: 400px;
-        }
+
+        input,
+        select,
         button {
-            background-color: #e51c23;
-            color: white;
+            width: 100%;
+            max-width: 500px;
+            padding: 13px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        input,
+        select {
+            border: 1px solid #bbb;
+            background: white;
+        }
+
+        button {
             border: none;
             cursor: pointer;
             font-weight: bold;
+            margin-top: 15px;
         }
-        button:hover {
-            background-color: #b71c1c;
+
+        .btn-calcular {
+            background: var(--rojo);
+            color: white;
         }
+
+        .btn-calcular:hover {
+            background: var(--rojo-hover);
+        }
+
+        .btn-limpiar {
+            background: var(--gris);
+            color: white;
+        }
+
+        .btn-limpiar:hover {
+            background: var(--gris-hover);
+        }
+
+        .recordatorio {
+            display: block;
+            max-width: 500px;
+            margin-top: 5px;
+            margin-bottom: 12px;
+            color: #555;
+            font-size: 0.82rem;
+            line-height: 1.4;
+        }
+
+        .resultado {
+            margin-top: 25px;
+        }
+
+        .tabla-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
         table {
             width: 100%;
-            max-width: 600px;
+            min-width: 600px;
             border-collapse: collapse;
-            margin-top: 20px;
+            background: white;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
+
+        th,
+        td {
+            border: 1px solid var(--borde);
+            padding: 10px 8px;
             text-align: center;
         }
+
         th {
-            background-color: #f2f2f2;
+            background: var(--gris-claro);
+            font-weight: bold;
+        }
+
+        td:first-child,
+        th:first-child {
+            text-align: left;
+        }
+
+        .frentes-min {
+            font-weight: bold;
+        }
+
+        .frentes-max {
+            font-weight: bold;
+        }
+
+        .resultado-enfriadores {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            background: var(--gris-claro);
+            text-align: center;
+        }
+
+        .numero-resultado {
+            display: block;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--rojo);
+            margin: 10px 0;
+        }
+
+        .detalle-calculo {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .error {
+            color: var(--rojo);
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .contenedor {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 1.35rem;
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            h2 {
+                font-size: 1.15rem;
+                margin-top: 30px;
+            }
+
+            label {
+                font-size: 16px;
+            }
+
+            input,
+            select,
+            button {
+                width: 100%;
+                max-width: 100%;
+                font-size: 17px;
+                padding: 14px;
+            }
+
+            .recordatorio {
+                font-size: 0.8rem;
+            }
+
+            th,
+            td {
+                font-size: 13px;
+                padding: 8px 6px;
+            }
+
+            .numero-resultado {
+                font-size: 2.7rem;
+            }
         }
     </style>
 </head>
+
 <body>
+
+<div class="contenedor">
+
     <h1>Calculadora de Frentes - Cooler</h1>
 
-    <label>¿Dónde está el cooler?</label>
-    <select id="ubicacion">
-        <option value="linea">Línea de Cajas</option>
-        <option value="piso">Piso de Venta</option>
-    </select>
+    <!-- =========================================================
+         CALCULADORA DE FRENTES
+         ========================================================= -->
 
-    <label>Total de Frentes (0 a 600)</label>
-    <input type="number" id="frentes" min="0" max="600" placeholder="Ingresa el total de frentes">
+    <h2>1. Cálculo de Frentes</h2>
 
-    <button onclick="calcular()">Calcular</button>
+    <form id="calculadoraFrentes">
 
-    <div id="resultado"></div>
+        <label for="formato">
+            ¿Qué formato de tienda estás trabajando?
+        </label>
 
-    <script>
-        function calcular() {
-            const ubicacion = document.getElementById('ubicacion').value;
-            const total = parseInt(document.getElementById('frentes').value);
-            const resultado = document.getElementById('resultado');
+        <select id="formato" required>
+            <option value="">Selecciona una opción</option>
+            <option value="walmart">Walmart</option>
+            <option value="bodega">Bodega / Mercado</option>
+            <option value="hiper">Hiper / Super</option>
+        </select>
 
-            if (isNaN(total) || total < 0 || total > 600) {
-                resultado.innerHTML = '<p style="color:red;">Por favor ingresa un número válido de frentes.</p>';
-                return;
-            }
 
-            let categorias = [];
+        <label for="ubicacion">
+            ¿Dónde está el cooler?
+        </label>
 
-            if (ubicacion === 'linea') {
-                categorias = [
-                    { nombre: 'Colas', min: 0.40, max: 0.60 },
-                    { nombre: 'Sabor Frutal', min: 0.16, max: 0.24 },
-                    { nombre: 'Nutrición', min: 0.16, max: 0.24 },
-                    { nombre: 'Hidratación', min: 0.08, max: 0.12 },
-                ];
-            } else {
-                categorias = [
-                    { nombre: 'Colas', min: 0.40, max: 0.60 },
-                    { nombre: 'Sabor Frutal', min: 0.20, max: 0.30 },
-                    { nombre: 'Nutrición', min: 0.12, max: 0.18 },
-                    { nombre: 'Hidratación', min: 0.08, max: 0.12 },
-                ];
-            }
+        <select id="ubicacion" required>
+            <option value="">Selecciona una opción</option>
+            <option value="checkout">Check Out</option>
+            <option value="piso">Piso de venta</option>
+        </select>
 
-            let tabla = '<table><tr><th>Categoría</th><th>Mín (%)</th><th>Máx (%)</th><th>Frentes Mínimos</th><th>Frentes Máximos</th></tr>';
 
-            categorias.forEach(cat => {
-                const minFrentes = Math.ceil(total * cat.min);
-                const maxFrentes = Math.ceil(total * cat.max);
-                tabla += `<tr>
-                    <td>${cat.nombre}</td>
-                    <td>${(cat.min * 100).toFixed(0)}%</td>
-                    <td>${(cat.max * 100).toFixed(0)}%</td>
-                    <td>${minFrentes}</td>
-                    <td>${maxFrentes}</td>
-                </tr>`;
-            });
+        <label for="frentes">
+            ¿Cuántos frentes tiene la tienda?
+        </label>
 
-            tabla += '</table>';
-            resultado.innerHTML = tabla;
+        <input
+            type="number"
+            id="frentes"
+            min="0"
+            max="600"
+            step="1"
+            placeholder="Ingresa el total de frentes"
+            required
+        >
+
+
+        <button
+            type="submit"
+            class="btn-calcular"
+        >
+            Calcular frentes
+        </button>
+
+        <button
+            type="reset"
+            class="btn-limpiar"
+        >
+            Limpiar
+        </button>
+
+    </form>
+
+
+    <div
+        id="resultadoFrentes"
+        class="resultado"
+    ></div>
+
+
+    <!-- =========================================================
+         CALCULADORA DE ENFRIADORES
+         ========================================================= -->
+
+    <h2>2. Cálculo de Enfriadores por Líneas de Cajas</h2>
+
+    <form id="calculadoraEnfriadores">
+
+        <label for="lineasCajas">
+            ¿Cuántas líneas de caja tiene la tienda?
+        </label>
+
+        <small class="recordatorio">
+            Recuerda que <strong>TODO autocobro se considera 1</strong>.
+        </small>
+
+        <input
+            type="number"
+            id="lineasCajas"
+            min="0"
+            step="1"
+            placeholder="Ej. 10"
+            required
+        >
+
+
+        <label for="competencia">
+            ¿Cuántos enfriadores tiene la competencia?
+        </label>
+
+        <small class="recordatorio">
+            Recuerda que se toman todos los enfriadores NARTD, como son
+            PC, AGA, Jarritos, Electrolit, Peñafiel, Lala.
+        </small>
+
+        <input
+            type="number"
+            id="competencia"
+            min="0"
+            step="1"
+            placeholder="Ej. 2"
+            required
+        >
+
+
+        <button
+            type="submit"
+            class="btn-calcular"
+        >
+            Calcular enfriadores
+        </button>
+
+        <button
+            type="reset"
+            class="btn-limpiar"
+        >
+            Limpiar
+        </button>
+
+    </form>
+
+
+    <div
+        id="resultadoEnfriadores"
+        class="resultado"
+    ></div>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       CONFIGURACIÓN DE PORCENTAJES
+       ========================================================= */
+
+    const configuracion = {
+
+        walmart: {
+
+            checkout: [
+                {
+                    nombre: "Colas",
+                    target: 52,
+                    min: 48,
+                    max: 56
+                },
+                {
+                    nombre: "Sabor",
+                    target: 25,
+                    min: 21,
+                    max: 31
+                },
+                {
+                    nombre: "Hidratación",
+                    target: 11,
+                    min: 8,
+                    max: 14
+                },
+                {
+                    nombre: "Nutrición",
+                    target: 9,
+                    min: 7,
+                    max: 11
+                },
+                {
+                    nombre: "Energizantes",
+                    target: 3,
+                    min: 0,
+                    max: 5
+                }
+            ],
+
+            piso: [
+                {
+                    nombre: "Colas",
+                    target: 49,
+                    min: 45,
+                    max: 53
+                },
+                {
+                    nombre: "Sabor",
+                    target: 18,
+                    min: 14,
+                    max: 22
+                },
+                {
+                    nombre: "Hidratación",
+                    target: 18,
+                    min: 15,
+                    max: 23
+                },
+                {
+                    nombre: "Nutrición",
+                    target: 12,
+                    min: 10,
+                    max: 14
+                },
+                {
+                    nombre: "Energizantes",
+                    target: 3,
+                    min: 0,
+                    max: 5
+                }
+            ]
+
+        },
+
+
+        bodega: {
+
+            checkout: [
+                {
+                    nombre: "Colas",
+                    target: 50,
+                    min: 46,
+                    max: 54
+                },
+                {
+                    nombre: "Sabor",
+                    target: 20,
+                    min: 16,
+                    max: 24
+                },
+                {
+                    nombre: "Hidratación",
+                    target: 19,
+                    min: 15,
+                    max: 23
+                },
+                {
+                    nombre: "Nutrición",
+                    target: 8,
+                    min: 6,
+                    max: 10
+                },
+                {
+                    nombre: "Energizantes",
+                    target: 3,
+                    min: 0,
+                    max: 5
+                }
+            ],
+
+            piso: [
+                {
+                    nombre: "Colas",
+                    target: 49,
+                    min: 45,
+                    max: 53
+                },
+                {
+                    nombre: "Sabor",
+                    target: 18,
+                    min: 14,
+                    max: 22
+                },
+                {
+                    nombre: "Hidratación",
+                    target: 18,
+                    min: 15,
+                    max: 23
+                },
+                {
+                    nombre: "Nutrición",
+                    target: 12,
+                    min: 10,
+                    max: 14
+                },
+                {
+                    nombre: "Energizantes",
+                    target: 3,
+                    min: 0,
+                    max: 5
+                }
+            ]
+
+        },
+
+
+        hiper: {
+
+            checkout: [
+                {
+                    nombre: "Colas",
+                    target: 50,
+                    min: 46,
+                    max: 54
+                },
+                {
+                    nombre: "Sabor",
+                    target: 20,
+                    min: 16,
+                    max: 24
+                },
+                {
+                    nombre: "Hidratación",
+                    target: 19,
+                    min: 15,
+                    max: 23
+                },
+                {
+                    nombre: "Nutrición",
+                    target: 8,
+                    min: 6,
+                    max: 10
+                },
+                {
+                    nombre: "Energizantes",
+                    target: 3,
+                    min: 0,
+                    max: 5
+                }
+            ],
+
+            piso: [
+                {
+                    nombre: "Colas",
+                    target: 49,
+                    min: 45,
+                    max: 53
+                },
+                {
+                    nombre: "Sabor",
+                    target: 18,
+                    min: 14,
+                    max: 22
+                },
+                {
+                    nombre: "Hidratación",
+                    target: 18,
+                    min: 15,
+                    max: 23
+                },
+                {
+                    nombre: "Nutrición",
+                    target: 12,
+                    min: 10,
+                    max: 14
+                },
+                {
+                    nombre: "Energizantes",
+                    target: 3,
+                    min: 0,
+                    max: 5
+                }
+            ]
+
         }
-    </script>
+
+    };
+
+
+    /* =========================================================
+       CALCULADORA DE FRENTES
+       ========================================================= */
+
+    document
+        .getElementById("calculadoraFrentes")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            calcularFrentes();
+
+        });
+
+
+    function calcularFrentes() {
+
+        const formato =
+            document.getElementById("formato").value;
+
+        const ubicacion =
+            document.getElementById("ubicacion").value;
+
+        const frentesInput =
+            document.getElementById("frentes").value;
+
+        const total =
+            parseInt(frentesInput, 10);
+
+        const resultado =
+            document.getElementById("resultadoFrentes");
+
+
+        /* Validación */
+
+        if (
+            formato === "" ||
+            ubicacion === "" ||
+            frentesInput === "" ||
+            isNaN(total) ||
+            total < 0 ||
+            total > 600
+        ) {
+
+            resultado.innerHTML = `
+                <p class="error">
+                    Por favor completa todos los campos correctamente.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        /* Obtener configuración */
+
+        const categorias =
+            configuracion[formato][ubicacion];
+
+
+        /* Crear tabla */
+
+        let tabla = `
+
+            <div class="tabla-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Target</th>
+                            <th>Mínimo</th>
+                            <th>Máximo</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+        `;
+
+
+        categorias.forEach(function(categoria) {
+
+            /*
+             * MÍNIMO:
+             * Siempre se redondea hacia arriba.
+             *
+             * Ejemplo:
+             * 10.1 → 11
+             */
+
+            const frentesMinimos =
+                Math.ceil(
+                    total * (categoria.min / 100)
+                );
+
+
+            /*
+             * MÁXIMO:
+             * Siempre se redondea hacia abajo.
+             *
+             * Ejemplo:
+             * 10.9 → 10
+             */
+
+            const frentesMaximos =
+                Math.floor(
+                    total * (categoria.max / 100)
+                );
+
+
+            tabla += `
+
+                <tr>
+
+                    <td>
+                        ${categoria.nombre}
+                    </td>
+
+                    <td>
+                        ${categoria.target}%
+                    </td>
+
+                    <td class="frentes-min">
+                        ${categoria.min}%
+                        <br>
+                        <strong>
+                            ${frentesMinimos}
+                        </strong>
+                        frentes
+                    </td>
+
+                    <td class="frentes-max">
+                        ${categoria.max}%
+                        <br>
+                        <strong>
+                            ${frentesMaximos}
+                        </strong>
+                        frentes
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+        tabla += `
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        `;
+
+
+        resultado.innerHTML = tabla;
+
+    }
+
+
+    /* =========================================================
+       LIMPIAR CALCULADORA DE FRENTES
+       ========================================================= */
+
+    document
+        .getElementById("calculadoraFrentes")
+        .addEventListener("reset", function() {
+
+            document.getElementById(
+                "resultadoFrentes"
+            ).innerHTML = "";
+
+        });
+
+
+    /* =========================================================
+       CALCULADORA DE ENFRIADORES
+       ========================================================= */
+
+    document
+        .getElementById("calculadoraEnfriadores")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            calcularEnfriadores();
+
+        });
+
+
+    function calcularEnfriadores() {
+
+        const lineasInput =
+            document.getElementById("lineasCajas").value;
+
+        const competenciaInput =
+            document.getElementById("competencia").value;
+
+
+        const lineas =
+            parseInt(lineasInput, 10);
+
+        const competencia =
+            parseInt(competenciaInput, 10);
+
+
+        const resultado =
+            document.getElementById("resultadoEnfriadores");
+
+
+        /* Validación */
+
+        if (
+            lineasInput === "" ||
+            competenciaInput === "" ||
+            isNaN(lineas) ||
+            isNaN(competencia) ||
+            lineas < 0 ||
+            competencia < 0
+        ) {
+
+            resultado.innerHTML = `
+                <p class="error">
+                    Por favor ingresa valores válidos.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        /*
+         * REGLA 1
+         *
+         * 1 enfriador por cada 4 líneas COMPLETAS.
+         *
+         * Por eso utilizamos FLOOR.
+         *
+         * 10 líneas → 2 enfriadores
+         * 11 líneas → 2 enfriadores
+         * 12 líneas → 3 enfriadores
+         */
+
+        const enfriadoresPorLineas =
+            Math.floor(lineas / 4);
+
+
+        /*
+         * REGLA 2
+         *
+         * Siempre debemos tener 1 enfriador
+         * más que la competencia.
+         *
+         * Competencia 2 → debemos tener 3
+         * Competencia 1 → debemos tener 2
+         */
+
+        const enfriadoresPorCompetencia =
+            competencia + 1;
+
+
+        /*
+         * RESULTADO
+         *
+         * Debemos cumplir ambas reglas.
+         *
+         * Por eso tomamos el valor más alto.
+         */
+
+        const enfriadoresNecesarios =
+            Math.max(
+                enfriadoresPorLineas,
+                enfriadoresPorCompetencia
+            );
+
+
+        resultado.innerHTML = `
+
+            <div class="resultado-enfriadores">
+
+                <div>
+                    Enfriadores necesarios
+                </div>
+
+                <span class="numero-resultado">
+                    ${enfriadoresNecesarios}
+                </span>
+
+                <div class="detalle-calculo">
+
+                    <strong>
+                        ${lineas}
+                    </strong>
+                    líneas de caja →
+                    <strong>
+                        ${enfriadoresPorLineas}
+                    </strong>
+                    enfriadores por regla 4:1
+
+                    <br><br>
+
+                    Competencia:
+                    <strong>
+                        ${competencia}
+                    </strong>
+                    enfriadores →
+
+                    debemos tener:
+                    <strong>
+                        ${enfriadoresPorCompetencia}
+                    </strong>
+
+                    <br><br>
+
+                    <strong>
+                        Debemos contar con ${enfriadoresNecesarios}
+                        enfriadores.
+                    </strong>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /* =========================================================
+       LIMPIAR CALCULADORA DE ENFRIADORES
+       ========================================================= */
+
+    document
+        .getElementById("calculadoraEnfriadores")
+        .addEventListener("reset", function() {
+
+            document.getElementById(
+                "resultadoEnfriadores"
+            ).innerHTML = "";
+
+        });
+
+</script>
+
 </body>
 </html>
